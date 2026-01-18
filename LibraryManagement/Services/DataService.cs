@@ -41,13 +41,25 @@ namespace LibraryManagement.Services
                     foreach (var book in books)
                         Books.Add(book);
 
-                    // Load borrow records with borrowed books
-                    var records = db.BorrowRecords
-                        .Include(r => r.BorrowedBooks)
-                        .ToList();
+                    // Load borrow records
+                    var records = db.BorrowRecords.ToList();
                     BorrowRecords.Clear();
+
                     foreach (var record in records)
+                    {
+                        // Load borrowed books for each record
+                        var borrowedBooks = db.BorrowedBooks
+                            .Where(bb => bb.BorrowRecordId == record.Id)
+                            .ToList();
+
+                        record.BorrowedBooks.Clear();
+                        foreach (var bb in borrowedBooks)
+                        {
+                            record.BorrowedBooks.Add(bb);
+                        }
+
                         BorrowRecords.Add(record);
+                    }
                 }
             }
             catch (Exception ex)
@@ -129,7 +141,16 @@ namespace LibraryManagement.Services
             {
                 using (var db = new LibraryDbContext())
                 {
+                    // Add the borrow record
                     db.BorrowRecords.Add(record);
+                    db.SaveChanges();
+
+                    // Add borrowed books separately
+                    foreach (var book in record.BorrowedBooks)
+                    {
+                        book.BorrowRecordId = record.Id;
+                        db.BorrowedBooks.Add(book);
+                    }
                     db.SaveChanges();
                 }
                 BorrowRecords.Add(record);
@@ -137,6 +158,11 @@ namespace LibraryManagement.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error adding borrow record: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
                 throw;
             }
         }
@@ -147,25 +173,21 @@ namespace LibraryManagement.Services
             {
                 using (var db = new LibraryDbContext())
                 {
-                    // Load existing record with borrowed books
-                    var existingRecord = db.BorrowRecords
-                        .Include(r => r.BorrowedBooks)
-                        .FirstOrDefault(r => r.Id == record.Id);
+                    // Update the borrow record
+                    db.BorrowRecords.Update(record);
 
-                    if (existingRecord != null)
+                    // Delete old borrowed books
+                    var oldBooks = db.BorrowedBooks.Where(bb => bb.BorrowRecordId == record.Id).ToList();
+                    db.BorrowedBooks.RemoveRange(oldBooks);
+
+                    // Add new borrowed books
+                    foreach (var book in record.BorrowedBooks)
                     {
-                        // Update properties
-                        db.Entry(existingRecord).CurrentValues.SetValues(record);
-
-                        // Update owned collection (BorrowedBooks)
-                        existingRecord.BorrowedBooks.Clear();
-                        foreach (var book in record.BorrowedBooks)
-                        {
-                            existingRecord.BorrowedBooks.Add(book);
-                        }
-
-                        db.SaveChanges();
+                        book.BorrowRecordId = record.Id;
+                        db.BorrowedBooks.Add(book);
                     }
+
+                    db.SaveChanges();
                 }
 
                 var existing = BorrowRecords.FirstOrDefault(r => r.Id == record.Id);

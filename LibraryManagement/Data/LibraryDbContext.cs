@@ -9,6 +9,8 @@ namespace LibraryManagement.Data
     {
         public DbSet<Book> Books { get; set; }
         public DbSet<BorrowRecord> BorrowRecords { get; set; }
+        public DbSet<BorrowedBook> BorrowedBooks { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -40,14 +42,31 @@ namespace LibraryManagement.Data
                 entity.Property(e => e.Unit).HasMaxLength(200);
                 entity.Property(e => e.BorrowerPhone).HasMaxLength(20);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+                
+                // Ignore the BorrowedBooks collection as it's loaded separately
+                entity.Ignore(e => e.BorrowedBooks);
+            });
 
-                // Configure owned type for BorrowedBooks collection
-                entity.OwnsMany(e => e.BorrowedBooks, bb =>
-                {
-                    bb.Property(b => b.BookId).IsRequired();
-                    bb.Property(b => b.BookTitle).IsRequired().HasMaxLength(500);
-                    bb.Property(b => b.Author).HasMaxLength(300);
-                });
+            // Configure BorrowedBook entity
+            modelBuilder.Entity<BorrowedBook>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.BorrowRecordId).IsRequired();
+                entity.Property(e => e.BookId).IsRequired();
+                entity.Property(e => e.BookTitle).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.Author).HasMaxLength(300);
+                entity.Property(e => e.Quantity).IsRequired();
+            });
+
+            // Configure User entity
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
+                entity.HasIndex(e => e.Username).IsUnique();
+                entity.Property(e => e.PasswordHash).IsRequired();
+                entity.Property(e => e.FullName).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Role).IsRequired().HasMaxLength(20);
             });
         }
     }

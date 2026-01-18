@@ -26,8 +26,7 @@ namespace LibraryManagement.ViewModels
         private string searchText = string.Empty;
 
         [ObservableProperty]
-        private string filterStatus = "Tất cả";
-
+    private string filterStatus = "Đang mượn";
         [ObservableProperty]
         private string filterName = string.Empty;
 
@@ -43,28 +42,43 @@ namespace LibraryManagement.ViewModels
         [ObservableProperty]
         private string filterPhone = string.Empty;
 
-        public ObservableCollection<string> StatusFilters { get; } = new ObservableCollection<string>
-        {
-            "Tất cả", "Đang mượn", "Đã trả", "Quá hạn"
-        };
+    [ObservableProperty]
+    private DateTime? filterBorrowDate = null;
 
-        public BorrowManagementViewModel()
-        {
-            _dataService = DataService.Instance;
-            borrowRecords = _dataService.BorrowRecords;
-            
-            // Sắp xếp theo ngày mượn (mới nhất trước)
-            var sorted = borrowRecords.OrderByDescending(r => r.BorrowDate).ToList();
-            filteredRecords = new ObservableCollection<BorrowRecord>(sorted);
-        }
+    [ObservableProperty]
+    private DateTime? filterDueDate = null;
 
-        partial void OnSearchTextChanged(string value) => FilterRecords();
-        partial void OnFilterStatusChanged(string value) => FilterRecords();
-        partial void OnFilterNameChanged(string value) => FilterRecords();
-        partial void OnFilterRankChanged(string value) => FilterRecords();
-        partial void OnFilterPositionChanged(string value) => FilterRecords();
-        partial void OnFilterUnitChanged(string value) => FilterRecords();
-        partial void OnFilterPhoneChanged(string value) => FilterRecords();
+    [ObservableProperty]
+    private DateTime? filterReturnDate = null;
+
+    public ObservableCollection<string> StatusFilters { get; } = new ObservableCollection<string>
+    {
+        "Tất cả", "Đang mượn", "Đã trả", "Quá hạn"
+    };
+
+    public BorrowManagementViewModel()
+    {
+        _dataService = DataService.Instance;
+        borrowRecords = _dataService.BorrowRecords;
+
+        // Set default filters: Hạn trả hôm nay, Đang mượn
+        FilterDueDate = DateTime.Today;
+        FilterStatus = "Đang mượn";
+        
+        // Apply initial filter
+        FilterRecords();
+    }
+
+    partial void OnSearchTextChanged(string value) => FilterRecords();
+    partial void OnFilterStatusChanged(string value) => FilterRecords();
+    partial void OnFilterNameChanged(string value) => FilterRecords();
+    partial void OnFilterRankChanged(string value) => FilterRecords();
+    partial void OnFilterPositionChanged(string value) => FilterRecords();
+    partial void OnFilterUnitChanged(string value) => FilterRecords();
+    partial void OnFilterPhoneChanged(string value) => FilterRecords();
+    partial void OnFilterBorrowDateChanged(DateTime? value) => FilterRecords();
+    partial void OnFilterDueDateChanged(DateTime? value) => FilterRecords();
+    partial void OnFilterReturnDateChanged(DateTime? value) => FilterRecords();
 
         private void FilterRecords()
         {
@@ -100,6 +114,16 @@ namespace LibraryManagement.ViewModels
 
             if (!string.IsNullOrWhiteSpace(FilterPhone))
                 filtered = filtered.Where(r => r.BorrowerPhone.Contains(FilterPhone, System.StringComparison.OrdinalIgnoreCase));
+
+            // Date filters
+            if (FilterBorrowDate.HasValue)
+                filtered = filtered.Where(r => r.BorrowDate.Date == FilterBorrowDate.Value.Date);
+
+            if (FilterDueDate.HasValue)
+                filtered = filtered.Where(r => r.DueDate.Date == FilterDueDate.Value.Date);
+
+            if (FilterReturnDate.HasValue)
+                filtered = filtered.Where(r => r.ReturnDate.HasValue && r.ReturnDate.Value.Date == FilterReturnDate.Value.Date);
 
             // Sắp xếp theo ngày mượn (mới nhất trước)
             var sorted = filtered.OrderByDescending(r => r.BorrowDate).ToList();

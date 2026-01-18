@@ -158,33 +158,50 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Ngày mượn" Binding="{Binding BorrowDate, StringFormat='dd/MM/yyyy'}" Width="115">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn
-                        Header="Hạn trả"
-                        Binding="{Binding DueDate, StringFormat='dd/MM/yyyy'}"
-                        Width="115">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Header="Ngày trả" Binding="{Binding ReturnDate, StringFormat='dd/MM/yyyy'}" Width="95">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                    <DataGridTemplateColumn MaxWidth="140">
+                        <DataGridTemplateColumn.Header>
+                            <StackPanel>
+                                <TextBlock Text="Ngày mượn" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                <DatePicker SelectedDate="{Binding DataContext.FilterBorrowDate, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}"
+                                    MaxWidth="110"
+                                    FontSize="11" Padding="3" Background="White" BorderBrush="#90CAF9"/>
+                            </StackPanel>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BorrowDate, StringFormat='dd/MM/yyyy'}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn MaxWidth="140">
+                        <DataGridTemplateColumn.Header>
+                            <StackPanel>
+                                <TextBlock Text="Hạn trả" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                <DatePicker SelectedDate="{Binding DataContext.FilterDueDate, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}"
+                                    MaxWidth="110"
+                                    FontSize="11" Padding="3" Background="White" BorderBrush="#90CAF9"/>
+                            </StackPanel>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DueDate, StringFormat='dd/MM/yyyy'}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn MaxWidth="140">
+                        <DataGridTemplateColumn.Header>
+                            <StackPanel>
+                                <TextBlock Text="Ngày trả" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                <DatePicker SelectedDate="{Binding DataContext.FilterReturnDate, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}"
+                                    MaxWidth="110" FontSize="11" Padding="3" Background="White" BorderBrush="#90CAF9"/>
+                            </StackPanel>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ReturnDate, StringFormat='dd/MM/yyyy'}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="120">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">

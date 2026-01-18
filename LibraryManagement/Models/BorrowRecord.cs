@@ -57,18 +57,19 @@ namespace LibraryManagement.Models
         }
     }
 
-    public partial class BorrowedBook : ObservableObject
+    public class BorrowedBook
     {
-        [ObservableProperty]
-        private string bookId = string.Empty;
+        public string Id { get; set; } = string.Empty;
+        public string BorrowRecordId { get; set; } = string.Empty;
+        public string BookId { get; set; } = string.Empty;
+        public string BookTitle { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
+        public int Quantity { get; set; } = 1;
 
-        [ObservableProperty]
-        private string bookTitle = string.Empty;
-
-        [ObservableProperty]
-        private string author = string.Empty;
-
-        [ObservableProperty]
-        private int quantity = 1;
+        public BorrowedBook()
+        {
+            if (string.IsNullOrEmpty(Id))
+                Id = Guid.NewGuid().ToString();
+        }
     }
 }
