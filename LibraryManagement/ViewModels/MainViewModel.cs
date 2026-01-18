@@ -9,7 +9,7 @@ namespace LibraryManagement.ViewModels
         private object? currentView;
 
         [ObservableProperty]
-        private string pageTitle = "Quản lý thư viện";
+        private string pageTitle = "Quản lý tài liệu của lữ đoàn 215";
 
         public MainViewModel()
         {
@@ -20,7 +20,7 @@ namespace LibraryManagement.ViewModels
         private void ShowBookManagement()
         {
             CurrentView = new BookManagementViewModel();
-            PageTitle = "Quản lý sách";
+            PageTitle = "Quản lý tài liệu của lữ đoàn 215";
         }
 
         [RelayCommand]
